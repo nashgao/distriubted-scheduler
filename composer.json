@@ -1,0 +1,54 @@
+{
+    "name": "nashgao/distributed-scheduler",
+    "description": "manage unique object among distributed system",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "nashgao",
+            "email": "nashgao1992@gmail.com"
+        }
+    ],
+    "require": {
+        "hyperf/redis": "~2.1.0",
+        "hyperf/di": "~2.1.0",
+        "hyperf/config": "~2.1.0",
+        "hyperf/framework": "~2.1.0",
+        "mix/redis-subscribe": "^2.2",
+        "hyperf/utils": "^2.1",
+        "nashgao/finite": "^0.1",
+        "hyperf/signal": "^2.1",
+        "nashgao/utils": "~0.1",
+        "ext-redis": "*"
+    },
+    "require-dev": {
+        "swoole/ide-helper": "^4.5",
+        "hyperf/testing": "v2.1.0",
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "mockery/mockery": "^1.4",
+        "phpstan/phpstan": "^0.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nashgao\\DistributedScheduler\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nashgao\\Test\\": "./test"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/co-phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "license-check": "docheader check src/ tests/",
+        "cs-fix": "php-cs-fixer fix $1",
+        "json-fix": "./bin/composer-json-fixer",
+        "analyse": "phpstan analyse --memory-limit 4096M -l 5 -c phpstan.neon"
+    },
+    "extra": {
+        "hyperf": {
+            "config": "Nashgao\\DistributedScheduler\\ConfigProvider"
+        }
+    }
+}
