@@ -28,7 +28,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
     public bool $isRunning = false;
 
-    protected array $container;
+    protected array $container = [];
 
     protected AdaptorInterface $adaptor;
 
