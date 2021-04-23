@@ -30,7 +30,7 @@ class TermSignalHandler implements SignalHandlerInterface
         // get annotation classes
         $classes = AnnotationCollector::getClassesByAnnotation(Scheduler::class);
         if (! empty($classes)) {
-            foreach ($classes as $class) {
+            foreach ($classes as $class => $object) {
                 $scheduler = $container->get($class);
                 if (! $scheduler instanceof DistributedScheduler) {
                     continue;
