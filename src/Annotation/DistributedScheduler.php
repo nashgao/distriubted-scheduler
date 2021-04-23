@@ -10,6 +10,6 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
  * @Annotation
  * @Target("CLASS")
  */
-class Scheduler extends AbstractAnnotation
+class DistributedScheduler extends AbstractAnnotation
 {
 }

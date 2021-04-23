@@ -8,7 +8,7 @@ use Hyperf\Contract\ConfigInterface;
 use Nashgao\DistributedScheduler\Action\CheckObjectExistenceAction;
 use Nashgao\DistributedScheduler\Action\DeleteDistributedSchedulerAction;
 use Nashgao\DistributedScheduler\Adaptor\AdaptorInterface;
-use Nashgao\DistributedScheduler\Annotation\Scheduler;
+use Nashgao\DistributedScheduler\Annotation\DistributedScheduler as Scheduler;
 use Nashgao\DistributedScheduler\Exception\DistributedSchedulerException;
 use Nashgao\DistributedScheduler\Instance\Instance;
 use Nashgao\DistributedScheduler\Message\Message;

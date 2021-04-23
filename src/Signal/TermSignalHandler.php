@@ -8,7 +8,7 @@ use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Signal\Annotation\Signal;
 use Hyperf\Signal\SignalHandlerInterface;
 use Hyperf\Utils\ApplicationContext;
-use Nashgao\DistributedScheduler\Annotation\Scheduler;
+use Nashgao\DistributedScheduler\Annotation\DistributedScheduler as Scheduler;
 use Nashgao\DistributedScheduler\DistributedScheduler;
 
 /**
