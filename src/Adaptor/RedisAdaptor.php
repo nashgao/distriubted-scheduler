@@ -86,7 +86,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return false;
     }
 
-    public function deleteAll()
+    public function deleteAll(): bool
     {
         // retrieve all the keys
         $keys = $this->redis->hGetAll($this->hashName);

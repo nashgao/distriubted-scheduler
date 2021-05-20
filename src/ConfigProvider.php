@@ -23,6 +23,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
+                DistributedSchedulerInterface::class => DistributedScheduler::class,
                 Subscriber::class => SubscriberFactory::class,
                 AdaptorInterface::class => RedisAdaptor::class,
                 PackerInterface::class => Serializer::class,
