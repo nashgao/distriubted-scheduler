@@ -76,7 +76,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
             throw new DistributedSchedulerException('instance event or instance id not set');
         }
 
-        $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        if (! isset($instance->uniqueId)) {
+            $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        }
+
 
         if ($existed or $this->existsInstance($instance, true)) {
             return true;
@@ -108,7 +111,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
     public function existsInstance(Instance $instance, bool $internal = false): bool
     {
-        if (! $internal) {
+        if (! $internal and ! isset($instance->uniqueId)) {
             $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
         }
 
@@ -147,7 +150,9 @@ class DistributedScheduler implements DistributedSchedulerInterface
      */
     public function findInstance(Instance $instance): ?array
     {
-        $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        if (! isset($instance->uniqueId)) {
+            $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        }
 
         // check local process
         if (array_key_exists($instance->uniqueId, $this->container)) {
@@ -190,14 +195,16 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
-        $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        if (! isset($instance->uniqueId)) {
+            $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
+        }
+
         /** @var string $serverWorkerIdKey */
         $serverWorkerIdKey = $this->adaptor->get($instance->uniqueId);
 
         if ($this->provider->isLocal($serverWorkerIdKey)) {
             if ($this->provider->inProcess($serverWorkerIdKey)) { // if the instance is in this process
-                unset($this->container[$instance->uniqueId]);
-                isset($this->container) ? array_filter($this->container) : $this->container = [];
+                $this->unsetElement($instance->uniqueId);
             } else { // if the instance is not in this process but same server
                 getServer()->sendMessage(
                     $this->createDeleteInstanceAction($instance->uniqueId, $serverWorkerIdKey),
