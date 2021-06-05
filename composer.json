@@ -18,7 +18,9 @@
         "hyperf/utils": "^2.1",
         "nashgao/finite": "^0.1",
         "hyperf/signal": "^2.1",
-        "nashgao/utils": "~0.1",
+        "nashgao/utils": "~0.1"
+    },
+    "suggest": {
         "ext-redis": "*"
     },
     "require-dev": {

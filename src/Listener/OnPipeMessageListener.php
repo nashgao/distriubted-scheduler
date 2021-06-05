@@ -16,11 +16,14 @@ use Nashgao\DistributedScheduler\Message\Message;
 
 class OnPipeMessageListener implements ListenerInterface
 {
+    protected ConfigInterface $config;
+
     protected bool $enable_task_worker;
 
     public function __construct(ConfigInterface $config)
     {
-        $this->enable_task_worker = $config->get('distributed_scheduler.enable_task_worker') ?? false;
+        $this->config = $config;
+        $this->enable_task_worker = $this->config->get('distributed_scheduler.enable_task_worker') ?? false;
     }
 
     /**
