@@ -38,12 +38,22 @@ class OnPipeMessageListener implements ListenerInterface
      */
     public function process(object $event)
     {
-        if (! $this->enable_task_worker and isTaskWorker()) {
+        if (! $this->isEnabled()) {
             return ;
         }
+
         $this->existence($event);
         $this->delete($event);
         $this->sendMessage($event);
+    }
+
+    protected function isEnabled(): bool
+    {
+        if (! $this->enable_task_worker and isTaskWorker()) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function existence(OnPipeMessage $event)
