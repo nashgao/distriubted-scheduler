@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nashgao\DistributedScheduler\Listener;
 
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\OnPipeMessage;
 use Hyperf\Utils\ApplicationContext;
@@ -15,6 +16,13 @@ use Nashgao\DistributedScheduler\Message\Message;
 
 class OnPipeMessageListener implements ListenerInterface
 {
+    protected bool $enable_task_worker;
+
+    public function __construct(ConfigInterface $config)
+    {
+        $this->enable_task_worker = $config->get('distributed_scheduler.enable_task_worker') ?? false;
+    }
+
     /**
      * @return string[]
      */
@@ -30,6 +38,9 @@ class OnPipeMessageListener implements ListenerInterface
      */
     public function process(object $event)
     {
+        if (! $this->enable_task_worker and isTaskWorker()) {
+            return ;
+        }
         $this->existence($event);
         $this->delete($event);
         $this->sendMessage($event);

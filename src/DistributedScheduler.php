@@ -42,6 +42,8 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
     protected Channel $channel;
 
+    protected bool $enable_task_worker;
+
     public function __construct(
         AdaptorInterface $adaptor,
         ProviderInterface $provider,
@@ -57,6 +59,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
         $this->workerNum = $this->config->get('server.settings.worker_num');
         $this->channel = new Channel(1);
         $this->isRunning = true;
+        $this->enable_task_worker = $this->config->get('distributed_scheduler.enable_task_worker') ?? false;
     }
 
     /**
@@ -66,6 +69,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
     {
         if (! $this->isRunning) {
             return false;
+        }
+
+        if (! $this->enable_task_worker and isTaskWorker()) {
+            throw new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false');
         }
 
         if (! isset($instance->actor)) {

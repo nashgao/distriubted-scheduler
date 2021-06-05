@@ -34,6 +34,14 @@ class ConfigProvider
                 RedisSubscriberListener::class,
                 ServerIdListener::class
             ],
+            'publish' => [
+                [
+                    'id' => 'config',
+                    'description' => 'description of this config file.',
+                    'source' => __DIR__ . '/../publish/distributed_scheduler.php',
+                    'destination' => BASE_PATH . '/config/autoload/distributed_scheduler.php',
+                ]
+            ],
             'annotations' => [
                 'scan' => [
                     'paths' => [
