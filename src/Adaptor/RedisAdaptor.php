@@ -198,7 +198,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
             return $hashName;
         }
 
-        if ($this->defaultSuffix) {
+        if (isset($this->defaultSuffix) and $this->defaultSuffix) {
             return join($this->concat, [$hashName, DistributedScheduler::$serverId]);
         }
 
