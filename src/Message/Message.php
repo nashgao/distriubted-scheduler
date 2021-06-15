@@ -10,12 +10,14 @@ class Message
 
     public ?string $workerId;
 
-    // key is encoded version of instance event and instance id
+    // key is encoded version of instance event and instance id (unique id in the instance)
     public ?string $key;
 
     public ?MessageBody $body;
 
     public ?string $schedulerClass;
+
+    public int $ttl = -1;
 
     public function __construct(
         string $serverId = null,
@@ -58,6 +60,12 @@ class Message
     public function setSchedulerClass(?string $schedulerClass): Message
     {
         $this->schedulerClass = $schedulerClass;
+        return $this;
+    }
+
+    public function setTtl(int $ttl): Message
+    {
+        $this->ttl = $ttl;
         return $this;
     }
 }

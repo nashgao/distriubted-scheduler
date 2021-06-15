@@ -64,11 +64,12 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return null;
     }
 
-    public function set(string $key, string $serverWorkerIdKey): bool
+    public function set(string $key, string $serverWorkerIdKey, int $ttl = -1): bool
     {
         $hSet = $this->redis->hSet($this->hashName, $key, $serverWorkerIdKey);
 
         if ((is_numeric($hSet) and $hSet === 1) or $hSet instanceof \Redis) {
+            $this->setExpire($key, $ttl);
             return true;
         }
 
@@ -112,6 +113,13 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
     public function destroyAll(): bool
     {
         return $this->deleteAll();
+    }
+
+    public function setExpire(string $key, int $ttl = -1)
+    {
+        if ($ttl !== -1) {
+            $this->redis->expire($key, $ttl + 5); //todo: give a tolerant value of expiration
+        }
     }
 
     public function subscribe()

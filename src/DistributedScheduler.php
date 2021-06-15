@@ -65,7 +65,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
     /**
      * @throws DistributedSchedulerException
      */
-    public function createInstance(Instance $instance, bool $existed = false): bool
+    public function createInstance(Instance $instance, bool $existed = false, int $ttl = 0): bool
     {
         if (! $this->isRunning) {
             return false;
@@ -253,7 +253,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
         // if it's in the same server
         if ($serverId === static::$serverId) {
-            return (int) $workerId === getWorkerId()
+            $result = (int) $workerId === getWorkerId()
                 // if it's the same process, then directly push message to the mail box
                 ? (function () use ($message) {
                     if (isset($this->container[$message->key])) {
@@ -265,8 +265,14 @@ class DistributedScheduler implements DistributedSchedulerInterface
                 : getServer()->sendMessage($message, (int) $workerId);
         } else {
             // use queue to pub and sub the message
-            return $this->queue->publish($message->setServerId($serverId)->setWorkerId($workerId));
+            $result = $this->queue->publish($message->setServerId($serverId)->setWorkerId($workerId));
         }
+
+        if ($result) {
+            $this->adaptor->setExpire($message->key, $message->ttl);
+        }
+
+        return $result;
     }
 
     public function unsetElement($key)

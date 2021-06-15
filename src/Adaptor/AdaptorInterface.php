@@ -12,7 +12,7 @@ interface AdaptorInterface
 
     public function get(string $key): ?string;
 
-    public function set(string $key, string $serverWorkerIdKey): bool;
+    public function set(string $key, string $serverWorkerIdKey, int $ttl = -1): bool;
 
     public function delete(string $key): bool;
 
@@ -22,6 +22,8 @@ interface AdaptorInterface
 
     /** @deprecated  */
     public function destroyAll();
+
+    public function setExpire(string $key, int $ttl = -1);
 
     public function getAdaptor(): Redis;
 }
