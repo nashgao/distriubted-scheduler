@@ -26,6 +26,8 @@ class Instance implements InstanceInterface
 
     public bool $transaction = false; // indicates it the transaction needs to be enabled
 
+    public int $ttl = -1;
+
     public Actor $actor;
 
     public function receive(Message $message)
@@ -49,5 +51,10 @@ class Instance implements InstanceInterface
     {
         $this->actor = $actor;
         return $this;
+    }
+
+    public function setTtl(int $ttl): void
+    {
+        $this->ttl = $ttl;
     }
 }

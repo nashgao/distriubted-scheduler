@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nashgao\DistributedScheduler\Adaptor;
 
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Redis\Redis;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
@@ -30,22 +31,35 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
 
     private string $hashName = 'ds:key';
 
+    private string $suffix;
+
+    private bool $defaultSuffix;
+
     private string $redisPrefix = 'ds';
 
     private ProviderInterface $provider;
 
     private PackerInterface $packer;
 
-    public function __construct(RedisFactory $redisFactory, ProviderInterface $provider, PackerInterface $packer)
-    {
+    public function __construct(
+        RedisFactory $redisFactory,
+        ProviderInterface $provider,
+        PackerInterface $packer,
+        ConfigInterface $config
+    ) {
         $this->redis = $redisFactory->get($this->connection);
         $this->provider = $provider;
         $this->packer = $packer;
+        $suffix = $config->get('distributed_scheduler.suffix');
+        if (isset($suffix) and ! empty($suffix)) {
+            $this->suffix = $suffix;
+        }
+        $this->defaultSuffix = $config->get('distributed_scheduler.default_suffix') ?? false;
     }
 
     public function exists(string $key): bool
     {
-        $hExists = $this->redis->hExists($this->hashName, $key);
+        $hExists = $this->redis->hExists($this->joinFullHashName($this->hashName), $key);
 
         if ((is_bool($hExists) and $hExists) or $hExists instanceof \Redis) {
             return true;
@@ -56,7 +70,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
 
     public function get(string $key): ?string
     {
-        $serverWorkerIdKey = $this->redis->hGet($this->hashName, $key);
+        $serverWorkerIdKey = $this->redis->hGet($this->joinFullHashName($this->hashName), $key);
         if (is_string($serverWorkerIdKey) or $serverWorkerIdKey instanceof \Redis) {
             return $serverWorkerIdKey;
         }
@@ -66,10 +80,10 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
 
     public function set(string $key, string $serverWorkerIdKey, int $ttl = -1): bool
     {
-        $hSet = $this->redis->hSet($this->hashName, $key, $serverWorkerIdKey);
+        $hSet = $this->redis->hSet($this->joinFullHashName($this->hashName), $key, $serverWorkerIdKey);
 
         if ((is_numeric($hSet) and $hSet === 1) or $hSet instanceof \Redis) {
-            $this->setExpire($key, $ttl);
+            $this->setExpire($ttl);
             return true;
         }
 
@@ -78,7 +92,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
 
     public function delete(string $key): bool
     {
-        $hDel = $this->redis->hDel($this->hashName, $key);
+        $hDel = $this->redis->hDel($this->joinFullHashName($this->hashName), $key);
 
         if ((is_numeric($hDel) and $hDel > 0) or $hDel instanceof \Redis) {
             return true;
@@ -90,7 +104,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
     public function deleteAll(): bool
     {
         // retrieve all the keys
-        $keys = $this->redis->hGetAll($this->hashName);
+        $keys = $this->redis->hGetAll($this->joinFullHashName($this->hashName));
         if (! empty($keys)) {
             $this->redis->multi();
             /**
@@ -115,10 +129,10 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return $this->deleteAll();
     }
 
-    public function setExpire(string $key, int $ttl = -1)
+    public function setExpire(int $ttl = -1)
     {
         if ($ttl !== -1) {
-            $this->redis->expire($key, $ttl + 5); //todo: give a tolerant value of expiration
+            $this->redis->expire($this->joinFullHashName($this->hashName), $ttl + 5); //todo: give a tolerant value of expiration
         }
     }
 
@@ -176,6 +190,19 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
     public function getAdaptor(): Redis
     {
         return $this->redis;
+    }
+
+    private function joinFullHashName(string $hashName): string
+    {
+        if (! isset($this->suffix) and ! $this->defaultSuffix) {
+            return $hashName;
+        }
+
+        if ($this->defaultSuffix) {
+            return join($this->concat, [$hashName, DistributedScheduler::$serverId]);
+        }
+
+        return join($this->concat, [$hashName, $this->suffix]);
     }
 
     private function getChannelName(): string

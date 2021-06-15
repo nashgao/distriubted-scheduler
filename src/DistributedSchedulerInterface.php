@@ -13,7 +13,7 @@ interface DistributedSchedulerInterface
 
     public function findInstance(Instance $instance): ?array;
 
-    public function existsInstance(Instance $instance, bool $internal):bool;
+    public function existsInstance(Instance $instance, bool $internal): bool;
 
     public function deleteInstance(Instance $instance): bool;
 

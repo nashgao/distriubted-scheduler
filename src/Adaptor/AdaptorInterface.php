@@ -23,7 +23,7 @@ interface AdaptorInterface
     /** @deprecated  */
     public function destroyAll();
 
-    public function setExpire(string $key, int $ttl = -1);
+    public function setExpire(int $ttl = -1);
 
     public function getAdaptor(): Redis;
 }

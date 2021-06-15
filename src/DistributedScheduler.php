@@ -18,7 +18,7 @@ use Nashgao\DistributedScheduler\Queue\QueueInterface;
 use Swoole\Coroutine\Channel;
 
 /**
- * @Scheduler()
+ * @Scheduler
  */
 class DistributedScheduler implements DistributedSchedulerInterface
 {
@@ -63,7 +63,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
     }
 
     /**
-     * @throws DistributedSchedulerException
+     * @throws \Throwable
      */
     public function createInstance(Instance $instance, bool $existed = false, int $ttl = 0): bool
     {
@@ -71,22 +71,22 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
-        if (! $this->enable_task_worker and isTaskWorker()) {
-            throw new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false');
-        }
-
-        if (! isset($instance->actor)) {
-            throw new DistributedSchedulerException('failed to create instance, object is not set');
-        }
-
-        if (! isset($instance->instanceEvent) or ! isset($instance->instanceId)) {
-            throw new DistributedSchedulerException('instance event or instance id not set');
-        }
+        throws(
+            fn () => ! $this->enable_task_worker and isTaskWorker(),
+            new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false')
+        );
+        throws(
+            fn () => ! isset($instance->actor),
+            new DistributedSchedulerException('failed to create instance, object is not set')
+        );
+        throws(
+            fn () => ! isset($instance->instanceEvent) or ! isset($instance->instanceId),
+            new DistributedSchedulerException('instance event or instance id not set')
+        );
 
         if (! isset($instance->uniqueId)) {
             $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
         }
-
 
         if ($existed or $this->existsInstance($instance, true)) {
             return true;
@@ -112,6 +112,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
+        $this->adaptor->setExpire($instance->ttl);
         $this->container[$instance->uniqueId] = $instance;
         return true;
     }
@@ -269,7 +270,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
         }
 
         if ($result) {
-            $this->adaptor->setExpire($message->key, $message->ttl);
+            $this->adaptor->setExpire($message->ttl);
         }
 
         return $result;

@@ -42,7 +42,7 @@ class OnPipeMessageListener implements ListenerInterface
     public function process(object $event)
     {
         if (! $this->isEnabled()) {
-            return ;
+            return;
         }
 
         $this->existence($event);
