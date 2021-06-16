@@ -112,7 +112,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
-        $this->adaptor->setExpire($instance->ttl);
+        if ($ttl > 0) {
+            $this->adaptor->setExpire($instance->ttl);
+        }
+
         $this->container[$instance->uniqueId] = $instance;
         return true;
     }
