@@ -115,7 +115,7 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
                 // check if the key belongs to this server and worker
                 $decoded = explode($this->provider->concat, $value);
                 if (DistributedScheduler::$serverId === (string) $decoded[0] and getWorkerId() === (int) $decoded[1]) {
-                    $this->redis->hDel($this->hashName, $key);
+                    $this->redis->hDel($this->joinFullHashName($this->hashName), $key);
                 }
             }
             $this->redis->exec();
