@@ -65,7 +65,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
     /**
      * @throws \Throwable
      */
-    public function createInstance(Instance $instance, bool $existed = false, int $ttl = 0): bool
+    public function createInstance(Instance $instance, bool $existed = false): bool
     {
         if (! $this->isRunning) {
             return false;
@@ -112,7 +112,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
-        if ($ttl > 0) {
+        if ($instance->ttl > 0) {
             $this->adaptor->setExpire($instance->ttl);
         }
 
