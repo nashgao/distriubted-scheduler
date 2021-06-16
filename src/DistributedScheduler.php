@@ -331,6 +331,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
     {
         return make(DeleteDistributedSchedulerAction::class)
             ->setKey($key)
+            ->setSchedulerClass(get_class($this))
             ->setServerWorkerIdKey(get_class($this))
             ->setServerWorkerIdKey($serverWorkerIdKey);
     }
