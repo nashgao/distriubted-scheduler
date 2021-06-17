@@ -108,15 +108,20 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         $keys = $this->redis->hGetAll($joinedHashName);
         if (! empty($keys)) {
             $this->redis->multi();
-            /**
-             * @var string $key   combination of "event#id"
-             * @var string $value combination of "serverId#workerId"
-             */
-            foreach ($keys as $key => $value) { // function that remove event#id key from the hash
-                // check if the key belongs to this server and worker
-                $decoded = explode($this->provider->concat, $value);
-                if ($serverId ?? DistributedScheduler::$serverId === (string) $decoded[0] and getWorkerId() === (int) $decoded[1]) {
-                    $this->redis->hDel($joinedHashName, $key);
+            // if the server id is given ,means user wants to actively check and delete the record
+            if (isset($serverId)) {
+                $this->redis->del($joinedHashName);
+            } else {
+                /**
+                 * @var string $key   combination of "event#id"
+                 * @var string $value combination of "serverId#workerId"
+                 */
+                foreach ($keys as $key => $value) { // function that remove event#id key from the hash
+                    // check if the key belongs to this server and worker
+                    $decoded = explode($this->provider->concat, $value);
+                    if ($serverId ?? DistributedScheduler::$serverId === (string) $decoded[0] and getWorkerId() === (int) $decoded[1]) {
+                        $this->redis->hDel($joinedHashName, $key);
+                    }
                 }
             }
             $this->redis->exec();
