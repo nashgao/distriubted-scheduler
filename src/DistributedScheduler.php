@@ -285,9 +285,9 @@ class DistributedScheduler implements DistributedSchedulerInterface
         isset($this->container) ? array_filter($this->container) : $this->container = [];
     }
 
-    public function deleteAll()
+    public function deleteAll(string $serverId = null)
     {
-        return $this->adaptor->deleteAll();
+        return $this->adaptor->deleteAll($serverId);
     }
 
     public function getChannel(): Channel

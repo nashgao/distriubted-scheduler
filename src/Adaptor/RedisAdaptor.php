@@ -101,10 +101,11 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return false;
     }
 
-    public function deleteAll(): bool
+    public function deleteAll(string $serverId = null): bool
     {
+        $joinedHashName = $this->joinFullHashName($this->hashName, $serverId);
         // retrieve all the keys
-        $keys = $this->redis->hGetAll($this->joinFullHashName($this->hashName));
+        $keys = $this->redis->hGetAll($joinedHashName);
         if (! empty($keys)) {
             $this->redis->multi();
             /**
@@ -114,8 +115,8 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
             foreach ($keys as $key => $value) { // function that remove event#id key from the hash
                 // check if the key belongs to this server and worker
                 $decoded = explode($this->provider->concat, $value);
-                if (DistributedScheduler::$serverId === (string) $decoded[0] and getWorkerId() === (int) $decoded[1]) {
-                    $this->redis->hDel($this->joinFullHashName($this->hashName), $key);
+                if ($serverId ?? DistributedScheduler::$serverId === (string) $decoded[0] and getWorkerId() === (int) $decoded[1]) {
+                    $this->redis->hDel($joinedHashName, $key);
                 }
             }
             $this->redis->exec();
@@ -124,9 +125,9 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return true;
     }
 
-    public function destroyAll(): bool
+    public function destroyAll(string $serverId = null): bool
     {
-        return $this->deleteAll();
+        return $this->deleteAll($serverId);
     }
 
     public function setExpire(int $ttl = -1)
@@ -192,14 +193,14 @@ class RedisAdaptor implements AdaptorInterface, DistributedAdaptorInterface
         return $this->redis;
     }
 
-    private function joinFullHashName(string $hashName): string
+    private function joinFullHashName(string $hashName, string $serverId = null): string
     {
         if (! isset($this->suffix) and ! $this->defaultSuffix) {
             return $hashName;
         }
 
         if (isset($this->defaultSuffix) and $this->defaultSuffix) {
-            return join($this->concat, [$hashName, DistributedScheduler::$serverId]);
+            return join($this->concat, [$hashName, $serverId ?? DistributedScheduler::$serverId]);
         }
 
         return join($this->concat, [$hashName, $this->suffix]);

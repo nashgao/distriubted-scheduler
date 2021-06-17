@@ -18,10 +18,10 @@ interface AdaptorInterface
 
     public function publish(string $message, string $channel = null);
 
-    public function deleteAll();
+    public function deleteAll(string $serverId = null);
 
     /** @deprecated  */
-    public function destroyAll();
+    public function destroyAll(string $serverId = null);
 
     public function setExpire(int $ttl = -1);
 
