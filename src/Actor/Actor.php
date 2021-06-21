@@ -24,11 +24,6 @@ class Actor extends FiniteStateMachine implements ActorInterface
     {
     }
 
-    public function getLoaderConfig(): array
-    {
-        return [];
-    }
-
     public function toArray(): array
     {
         return get_object_vars($this);
