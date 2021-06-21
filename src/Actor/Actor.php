@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Nashgao\DistributedScheduler\Actor;
 
-use Finite\Event\StateMachineDispatcher;
-use Finite\State\Accessor\StateAccessorInterface;
-use Finite\StateMachine\StateMachine;
+use Nashgao\Finite\Machine\FiniteStateMachine;
+use Nashgao\Finite\StatefulInterface;
 use Swoole\Coroutine\Channel;
 
-class Actor extends StateMachine implements ActorInterface
+class Actor extends FiniteStateMachine implements ActorInterface
 {
     public Channel $mailbox;
 
     public array $children = [];
 
-    public function __construct(object $object = null, StateMachineDispatcher $dispatcher = null, StateAccessorInterface $stateAccessor = null)
+    public function __construct(StatefulInterface $object)
     {
-        parent::__construct($object, $dispatcher, $stateAccessor);
+        parent::__construct($object);
         $this->mailbox = new Channel(1);
     }
 

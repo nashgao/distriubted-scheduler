@@ -10,14 +10,15 @@
         }
     ],
     "require": {
-        "hyperf/redis": "~2.1.0",
-        "hyperf/di": "~2.1.0",
-        "hyperf/config": "~2.1.0",
-        "hyperf/framework": "~2.1.0",
+        "php" : ">=8.0",
+        "hyperf/redis": "2.2.*",
+        "hyperf/di": "2.2.*",
+        "hyperf/config": "2.2.*",
+        "hyperf/framework": "2.2.*",
         "mix/redis-subscribe": "^2.2",
-        "hyperf/utils": "^2.1",
-        "nashgao/finite": "^0.1",
-        "hyperf/signal": "^2.1",
+        "hyperf/utils": "2.2.*",
+        "nashgao/finite-state-machine": "dev-master",
+        "hyperf/signal": "2.2.*",
         "nashgao/utils": "dev-master"
     },
     "suggest": {
@@ -25,7 +26,7 @@
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
-        "hyperf/testing": "v2.1.0",
+        "hyperf/testing": "2.2.*",
         "friendsofphp/php-cs-fixer": "^2.14",
         "mockery/mockery": "^1.4",
         "phpstan/phpstan": "^0.12"
@@ -40,6 +41,8 @@
             "Nashgao\\Test\\": "./test"
         }
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "scripts": {
         "test": "./vendor/bin/co-phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
