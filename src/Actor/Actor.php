@@ -8,7 +8,7 @@ use Nashgao\Finite\Machine\FiniteStateMachine;
 use Nashgao\Finite\StatefulInterface;
 use Swoole\Coroutine\Channel;
 
-class Actor extends FiniteStateMachine implements ActorInterface
+abstract class Actor extends FiniteStateMachine implements ActorInterface
 {
     public Channel $mailbox;
 
