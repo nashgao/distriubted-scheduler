@@ -49,7 +49,7 @@
         "license-check": "docheader check src/ tests/",
         "cs-fix": "php-cs-fixer fix $1",
         "json-fix": "./bin/composer-json-fixer",
-        "analyse": "phpstan analyse --memory-limit 4096M -l 5 -c phpstan.neon"
+        "analyse": "phpstan analyse --memory-limit 4096M -l 5 -c phpstan.neon ./src"
     },
     "extra": {
         "hyperf": {

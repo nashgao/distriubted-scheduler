@@ -72,7 +72,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
         }
 
         if (! $this->enable_task_worker and isTaskWorker()) {
-            throw new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false')
+            throw new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false');
 
         }
 
