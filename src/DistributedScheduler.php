@@ -71,18 +71,19 @@ class DistributedScheduler implements DistributedSchedulerInterface
             return false;
         }
 
-        throws(
-            fn () => !(! $this->enable_task_worker and isTaskWorker()),
-            new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false')
-        );
-        throws(
-            fn () => ! isset($instance->actor),
-            new DistributedSchedulerException('failed to create instance, object is not set')
-        );
-        throws(
-            fn () => ! isset($instance->instanceEvent) or ! isset($instance->instanceId),
-            new DistributedSchedulerException('instance event or instance id not set')
-        );
+        if (! $this->enable_task_worker and isTaskWorker()) {
+            throw new DistributedSchedulerException('unable to create the instance in task worker when enable_task_work is set to false')
+
+        }
+
+        if (! isset($instance->actor)) {
+            throw new DistributedSchedulerException('failed to create instance, object is not set');
+
+        }
+
+        if (! isset($instance->instanceEvent) or ! isset($instance->instanceId)) {
+            throw new DistributedSchedulerException('instance event or instance id not set');
+        }
 
         if (! isset($instance->uniqueId)) {
             $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
