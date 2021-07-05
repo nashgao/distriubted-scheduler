@@ -214,6 +214,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
         /** @var string $serverWorkerIdKey */
         $serverWorkerIdKey = $this->adaptor->get($instance->uniqueId);
 
+        if (! isset($serverWorkerIdKey)) {
+            return false;
+        }
+
         if ($this->provider->isLocal($serverWorkerIdKey)) {
             if ($this->provider->inProcess($serverWorkerIdKey)) { // if the instance is in this process
                 $this->unsetElement($instance->uniqueId);
