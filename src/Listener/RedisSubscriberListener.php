@@ -9,6 +9,7 @@ use Hyperf\Framework\Event\MainWorkerStart;
 use Hyperf\Utils\ApplicationContext;
 use Nashgao\DistributedScheduler\Adaptor\AdaptorInterface;
 use Nashgao\DistributedScheduler\Adaptor\RedisAdaptor;
+use Nashgao\DistributedScheduler\Event\SubscribeEvent;
 use Nashgao\DistributedScheduler\Queue\QueueInterface;
 use Nashgao\DistributedScheduler\Queue\RedisQueue;
 
@@ -21,6 +22,7 @@ class RedisSubscriberListener implements ListenerInterface
     {
         return [
             MainWorkerStart::class,
+            SubscribeEvent::class,
         ];
     }
 
