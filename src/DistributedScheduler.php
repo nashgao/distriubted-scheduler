@@ -28,6 +28,8 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
     public bool $isRunning = false;
 
+    public bool $enable;
+
     protected array $container = [];
 
     protected AdaptorInterface $adaptor;
@@ -60,6 +62,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
         $this->channel = new Channel(1);
         $this->isRunning = true;
         $this->enable_task_worker = $this->config->get('distributed_scheduler.enable_task_worker') ?? false;
+        $this->enable = $this->config->get('distributed_scheduler.enable') ?? true;
     }
 
     /**
@@ -67,7 +70,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
      */
     public function createInstance(Instance $instance, bool $existed = false): bool
     {
-        if (! $this->isRunning) {
+        if (! $this->isRunning or ! $this->enable) {
             return false;
         }
 
@@ -123,6 +126,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
 
     public function existsInstance(Instance $instance, bool $internal = false): bool
     {
+        if (! $this->enable) {
+            return false;
+        }
+
         if (! $internal and ! isset($instance->uniqueId)) {
             $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
         }
@@ -162,6 +169,10 @@ class DistributedScheduler implements DistributedSchedulerInterface
      */
     public function findInstance(Instance $instance): ?array
     {
+        if (! $this->enable) {
+            return null;
+        }
+
         if (! isset($instance->uniqueId)) {
             $instance->uniqueId = $this->provider->encode($instance->instanceId, $instance->instanceEvent);
         }
@@ -199,7 +210,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
      */
     public function deleteInstance(Instance $instance): bool
     {
-        if (! $this->isRunning) {
+        if (! $this->isRunning or ! $this->enable) {
             return false;
         }
 
@@ -244,7 +255,7 @@ class DistributedScheduler implements DistributedSchedulerInterface
      */
     public function sendTo(Message $message): bool
     {
-        if (! $this->isRunning) {
+        if (! $this->isRunning or ! $this->enable) {
             return false;
         }
 
