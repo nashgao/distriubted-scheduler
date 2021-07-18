@@ -35,21 +35,27 @@ class Instance implements InstanceInterface
         $this->actor->mailbox->push($message);
     }
 
-    public function setInstanceEvent(string $instanceEvent): Instance
+    public function setInstanceEvent(string $instanceEvent): static
     {
         $this->instanceEvent = $instanceEvent;
         return $this;
     }
 
-    public function setInstanceId(string $instanceId): Instance
+    public function setInstanceId(string $instanceId): static
     {
         $this->instanceId = $instanceId;
         return $this;
     }
 
-    public function setActor(Actor $actor): Instance
+    public function setActor(Actor $actor): static
     {
         $this->actor = $actor;
+        return $this;
+    }
+
+    public function setTransaction(bool $transaction): static
+    {
+        $this->transaction = $transaction;
         return $this;
     }
 
